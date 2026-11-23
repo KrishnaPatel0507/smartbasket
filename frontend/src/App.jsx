@@ -545,7 +545,7 @@ export default function App() {
                   onClick={() => {
                     setCurrentUser({
                       id: 'user-admin',
-                      name: 'Admin Manager',
+                      name: 'Krishna Patel',
                       email: 'admin@smartbasket.com',
                       role: 'admin'
                     });
@@ -553,7 +553,7 @@ export default function App() {
                   className="w-full py-3 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
                 >
                   <Crown className="w-4 h-4 text-amber-400" />
-                  <span>1-Click Switch to Store Admin Account</span>
+                  <span>1-Click Switch to Krishna Patel (Store Admin)</span>
                 </button>
 
                 <button

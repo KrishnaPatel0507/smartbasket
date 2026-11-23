@@ -5,7 +5,7 @@ const router = express.Router();
 const users = [
   {
     id: 'user-admin',
-    name: 'Admin Manager',
+    name: 'Krishna Patel',
     email: 'admin@smartbasket.com',
     password: 'admin123',
     role: 'admin',
@@ -91,7 +91,7 @@ router.get('/demo-accounts', (req, res) => {
   res.json({
     success: true,
     accounts: [
-      { role: 'admin', email: 'admin@smartbasket.com', name: 'Admin Manager', description: 'Full access to inventory, pricing, analytics & restock automation' },
+      { role: 'admin', email: 'admin@smartbasket.com', name: 'Krishna Patel (Store Admin)', description: 'Full access to inventory, pricing, analytics & restock automation' },
       { role: 'customer', email: 'user@smartbasket.com', name: 'Rahul Sharma', description: 'Customer shopping, budget planner, recipes & order checkout' }
     ]
   });

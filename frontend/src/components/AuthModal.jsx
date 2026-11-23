@@ -28,7 +28,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess, initialRole 
     } catch (err) {
       // Fallback local mock login in case serverless backend route has cold start
       const fallbackUser = demoRole === 'admin'
-        ? { id: 'admin-1', name: 'Store Admin Manager', email: 'admin@smartbasket.com', role: 'admin' }
+        ? { id: 'admin-1', name: 'Krishna Patel (Store Admin)', email: 'admin@smartbasket.com', role: 'admin' }
         : { id: 'user-1', name: 'Rahul Sharma (Customer)', email: 'user@smartbasket.com', role: 'customer' };
       onAuthSuccess(fallbackUser);
       onClose();
