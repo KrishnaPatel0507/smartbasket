@@ -8,7 +8,7 @@ A production-grade, full-stack intelligent grocery application combining online 
 
 ### 1. Customer Grocery Storefront
 - **Modern Responsive Design**: Emerald green & pastel grocery theme with clean typography and fluid micro-interactions.
-- **Product Catalog by Categories**: Fruits & Vegetables, Dairy & Eggs, Bakery & Bread, Staples & Grains, Snacks & Beverages, Household & Cleaning, Personal Care.
+- **Product Catalog by Categories**: Fruits & Vegetables, Dairy & Bakery, Staples & Grains, Snacks & Beverages, Household & Cleaning, Personal Care (100% Pure Vegetarian).
 - **Real-Time Filtering & Search**: Instant search by keywords and tags, category pills, price range slider (up to ₹500), and "In Stock Only" toggle.
 - **Detailed Product Insights**: High-resolution imagery, unit specifications (e.g. 1 kg, 500 ml, 6 pcs), prices in INR, discount badges, and customer ratings.
 - **Quantity & Cart Management**: Instant cart addition, increment/decrement controls, subtotal tracking, and persistent local storage.
@@ -162,7 +162,7 @@ Follow these simple steps during an academic evaluation or live presentation to 
 
 ### Step 1: Customer Grocery Shopping & Dynamic Filtering
 1. Open `http://localhost:3000`.
-2. Browse categories: *Fruits & Vegetables*, *Dairy & Eggs*, *Staples & Grains*.
+2. Browse categories: *Fruits & Vegetables*, *Dairy & Bakery*, *Staples & Grains*. Notice the official green Indian vegetarian mark on every item.
 3. Use the search bar to search for `"paneer"`, `"atta"`, or `"milk"`.
 4. Notice the real-time stock badges: items with low stock display an amber pulse badge (*"Only X left!"*).
 5. Click any product to open the **Product Modal** and observe the **Gemini AI Affordable Alternatives** section recommending cheaper substitutes with price comparisons.

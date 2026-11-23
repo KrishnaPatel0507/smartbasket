@@ -53,9 +53,17 @@ export default function ProductModal({
           />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent flex items-end p-6">
             <div className="text-white">
-              <span className="bg-emerald-500/90 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full mb-2 inline-block">
-                {product.category}
-              </span>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="bg-emerald-500/90 text-white text-xs font-semibold px-2.5 py-0.5 rounded-full inline-block">
+                  {product.category}
+                </span>
+                <span className="inline-flex items-center gap-1 bg-white/20 text-white text-[11px] font-bold px-2 py-0.5 rounded-full backdrop-blur-xs">
+                  <span className="w-2.5 h-2.5 border-2 border-emerald-400 rounded-xs flex items-center justify-center p-0.5">
+                    <span className="w-1 h-1 bg-emerald-400 rounded-full"></span>
+                  </span>
+                  100% Pure Veg
+                </span>
+              </div>
               <h2 className="text-2xl sm:text-3xl font-black">{product.name}</h2>
               <div className="flex items-center gap-3 mt-1 text-sm text-slate-200">
                 <span className="font-semibold">{product.unit}</span>

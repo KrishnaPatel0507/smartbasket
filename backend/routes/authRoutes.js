@@ -13,12 +13,12 @@ const users = [
   },
   {
     id: 'user-customer',
-    name: 'Rahul Sharma',
+    name: 'Abhi Patel',
     email: 'user@smartbasket.com',
     password: 'user123',
     role: 'customer',
     phone: '+91 98765 43210',
-    address: '402 Green Meadows, Sector 14, Gurugram'
+    address: 'Flat 502, Shivalik Residency, Satellite, Ahmedabad, Gujarat - 380015'
   }
 ];
 
@@ -92,7 +92,7 @@ router.get('/demo-accounts', (req, res) => {
     success: true,
     accounts: [
       { role: 'admin', email: 'admin@smartbasket.com', name: 'Krishna Patel (Store Admin)', description: 'Full access to inventory, pricing, analytics & restock automation' },
-      { role: 'customer', email: 'user@smartbasket.com', name: 'Rahul Sharma', description: 'Customer shopping, budget planner, recipes & order checkout' }
+      { role: 'customer', email: 'user@smartbasket.com', name: 'Abhi Patel (Customer)', description: 'Customer shopping, budget planner, recipes & order checkout' }
     ]
   });
 });

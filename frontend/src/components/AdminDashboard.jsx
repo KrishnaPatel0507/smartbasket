@@ -39,6 +39,7 @@ export default function AdminDashboard({ products, onRefreshProducts, onOpenInvo
   const [productForm, setProductForm] = useState({
     name: '',
     category: 'Fruits & Vegetables',
+    isVeg: true,
     price: '',
     originalPrice: '',
     unit: '1 kg',
@@ -882,8 +883,7 @@ export default function AdminDashboard({ products, onRefreshProducts, onOpenInvo
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-emerald-600"
                   >
                     <option value="Fruits & Vegetables">Fruits & Vegetables</option>
-                    <option value="Dairy & Eggs">Dairy & Eggs</option>
-                    <option value="Bakery & Bread">Bakery & Bread</option>
+                    <option value="Dairy & Bakery">Dairy & Bakery</option>
                     <option value="Staples & Grains">Staples & Grains</option>
                     <option value="Snacks & Beverages">Snacks & Beverages</option>
                     <option value="Household & Cleaning">Household & Cleaning</option>

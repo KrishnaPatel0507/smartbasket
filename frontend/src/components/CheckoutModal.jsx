@@ -11,10 +11,10 @@ export default function CheckoutModal({
   onOrderSuccess
 }) {
   const [formData, setFormData] = useState({
-    name: 'Rahul Sharma',
-    email: 'rahul.sharma@example.com',
+    name: 'Abhi Patel',
+    email: 'abhi.patel@example.com',
     phone: '+91 98765 43210',
-    address: '402, Green Meadows Heights, Sector 14, Gurugram, Haryana - 122001',
+    address: 'Flat 502, Shivalik Residency, Satellite, Ahmedabad, Gujarat - 380015',
     paymentMethod: 'UPI'
   });
   const [submitting, setSubmitting] = useState(false);

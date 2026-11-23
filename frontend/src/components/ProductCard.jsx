@@ -77,14 +77,22 @@ export default function ProductCard({
             </div>
           </div>
 
-          {/* Title */}
-          <h3
-            onClick={() => onOpenDetails(product)}
-            className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors text-base line-clamp-1 cursor-pointer"
-            title={product.name}
-          >
-            {product.name}
-          </h3>
+          {/* Title with Indian Vegetarian Symbol */}
+          <div className="flex items-start gap-1.5">
+            <span
+              className="mt-1 inline-flex items-center justify-center w-3.5 h-3.5 border-2 border-emerald-600 rounded-xs p-0.5 shrink-0"
+              title="100% Pure Vegetarian"
+            >
+              <span className="w-1.5 h-1.5 bg-emerald-600 rounded-full"></span>
+            </span>
+            <h3
+              onClick={() => onOpenDetails(product)}
+              className="font-bold text-slate-900 group-hover:text-emerald-700 transition-colors text-base line-clamp-1 cursor-pointer flex-1"
+              title={product.name}
+            >
+              {product.name}
+            </h3>
+          </div>
 
           {/* Unit / Weight */}
           <p className="text-xs text-slate-500 font-medium mt-0.5 mb-2">

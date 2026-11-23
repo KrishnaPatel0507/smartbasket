@@ -1,9 +1,10 @@
 const initialProducts = [
-  // 1. Fruits & Vegetables
+  // 1. Fresh Fruits & Vegetables (100% Pure Veg)
   {
     id: "prod-1",
     name: "Fresh Alphonso Mangoes (Ratnagiri)",
     category: "Fruits & Vegetables",
+    isVeg: true,
     price: 349,
     originalPrice: 420,
     unit: "1 kg (approx 3-4 pcs)",
@@ -20,6 +21,7 @@ const initialProducts = [
     id: "prod-2",
     name: "Farm Fresh Desi Tomatoes",
     category: "Fruits & Vegetables",
+    isVeg: true,
     price: 38,
     originalPrice: 50,
     unit: "1 kg",
@@ -36,10 +38,11 @@ const initialProducts = [
     id: "prod-3",
     name: "Organic Red Onions",
     category: "Fruits & Vegetables",
+    isVeg: true,
     price: 35,
     originalPrice: 45,
     unit: "1 kg",
-    stock: 8, // Low stock on purpose for testing automation!
+    stock: 8,
     minStockLevel: 15,
     image: "https://images.unsplash.com/photo-1618512496248-a07fe83aa8cb?w=500&auto=format&fit=crop&q=80",
     description: "Crisp and pungent organically grown red onions essential for daily Indian cooking.",
@@ -52,6 +55,7 @@ const initialProducts = [
     id: "prod-4",
     name: "Pahadi Fresh Potatoes (Aloo)",
     category: "Fruits & Vegetables",
+    isVeg: true,
     price: 28,
     originalPrice: 35,
     unit: "1 kg",
@@ -68,10 +72,11 @@ const initialProducts = [
     id: "prod-5",
     name: "Crisp Green Capsicum (Shimla Mirch)",
     category: "Fruits & Vegetables",
+    isVeg: true,
     price: 45,
     originalPrice: 60,
     unit: "500 g",
-    stock: 6, // Low stock
+    stock: 6,
     minStockLevel: 10,
     image: "https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=500&auto=format&fit=crop&q=80",
     description: "Vibrant and crunchy green bell peppers rich in vitamins A and C.",
@@ -84,6 +89,7 @@ const initialProducts = [
     id: "prod-6",
     name: "Fresh Palak (Spinach)",
     category: "Fruits & Vegetables",
+    isVeg: true,
     price: 24,
     originalPrice: 30,
     unit: "250 g bunch",
@@ -96,12 +102,98 @@ const initialProducts = [
     salesCount: 165,
     isFeatured: false
   },
-
-  // 2. Dairy & Eggs
   {
     id: "prod-7",
+    name: "Fresh Sweet Green Peas (Matar)",
+    category: "Fruits & Vegetables",
+    isVeg: true,
+    price: 65,
+    originalPrice: 80,
+    unit: "1 kg",
+    stock: 32,
+    minStockLevel: 10,
+    image: "https://images.unsplash.com/photo-1587735243615-c03f25aaff15?w=500&auto=format&fit=crop&q=80",
+    description: "Naturally sweet green peas, tender and crisp, perfect for matar paneer, pulao, and samosas.",
+    tags: ["fresh", "vegetable", "green", "sweet"],
+    rating: 4.9,
+    salesCount: 225,
+    isFeatured: true
+  },
+  {
+    id: "prod-8",
+    name: "Organic Farm Cauliflower (Gobhi)",
+    category: "Fruits & Vegetables",
+    isVeg: true,
+    price: 38,
+    originalPrice: 48,
+    unit: "1 pc (approx 600g-800g)",
+    stock: 18,
+    minStockLevel: 8,
+    image: "https://images.unsplash.com/photo-1568584711075-3d021a7c3ca3?w=500&auto=format&fit=crop&q=80",
+    description: "Crisp white florets harvested fresh from certified organic farms.",
+    tags: ["fresh", "vegetable", "curry"],
+    rating: 4.7,
+    salesCount: 140,
+    isFeatured: false
+  },
+  {
+    id: "prod-9",
+    name: "Fresh Tender Lady Finger (Bhindi)",
+    category: "Fruits & Vegetables",
+    isVeg: true,
+    price: 34,
+    originalPrice: 42,
+    unit: "500 g",
+    stock: 24,
+    minStockLevel: 10,
+    image: "https://images.unsplash.com/photo-1425543103986-22abb7d7e8d2?w=500&auto=format&fit=crop&q=80",
+    description: "Tender, bright green farm-fresh bhindi, perfect for crispy kurkuri bhindi and masala curry.",
+    tags: ["fresh", "vegetable", "bhindi", "curry"],
+    rating: 4.8,
+    salesCount: 185,
+    isFeatured: false
+  },
+  {
+    id: "prod-10",
+    name: "Fresh Carrots & Cucumber Salad Duo",
+    category: "Fruits & Vegetables",
+    isVeg: true,
+    price: 45,
+    originalPrice: 55,
+    unit: "1 kg (500g Carrots + 500g Cucumber)",
+    stock: 20,
+    minStockLevel: 8,
+    image: "https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=500&auto=format&fit=crop&q=80",
+    description: "Crunchy sweet red carrots paired with cooling cucumbers, washed and ready for salads.",
+    tags: ["fresh", "vegetable", "salad", "healthy"],
+    rating: 4.8,
+    salesCount: 155,
+    isFeatured: false
+  },
+  {
+    id: "prod-11",
+    name: "Fresh Coriander & Green Chillies Combo",
+    category: "Fruits & Vegetables",
+    isVeg: true,
+    price: 25,
+    originalPrice: 32,
+    unit: "150 g Pack",
+    stock: 30,
+    minStockLevel: 12,
+    image: "https://images.unsplash.com/photo-1599940824399-b87987ceb72a?w=500&auto=format&fit=crop&q=80",
+    description: "Aromatic fresh green coriander leaves paired with spicy desi green chillies for daily tadka.",
+    tags: ["fresh", "garnish", "spicy", "daily"],
+    rating: 4.9,
+    salesCount: 320,
+    isFeatured: false
+  },
+
+  // 2. Dairy & Bakery (100% Pure Veg)
+  {
+    id: "prod-12",
     name: "Amul Taaza Homogenised Toned Milk",
-    category: "Dairy & Eggs",
+    category: "Dairy & Bakery",
+    isVeg: true,
     price: 54,
     originalPrice: 56,
     unit: "1 Litre Tetra Pack",
@@ -115,29 +207,14 @@ const initialProducts = [
     isFeatured: true
   },
   {
-    id: "prod-8",
-    name: "Amul Salted Butter",
-    category: "Dairy & Eggs",
-    price: 56,
-    originalPrice: 60,
-    unit: "100 g",
-    stock: 25,
-    minStockLevel: 10,
-    image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=80",
-    description: "The classic Utterly Butterly Delicious pasteurized table butter made with pure milk fat.",
-    tags: ["dairy", "butter", "breakfast", "cooking"],
-    rating: 4.9,
-    salesCount: 340,
-    isFeatured: false
-  },
-  {
-    id: "prod-9",
+    id: "prod-13",
     name: "Fresh Malai Paneer Block",
-    category: "Dairy & Eggs",
+    category: "Dairy & Bakery",
+    isVeg: true,
     price: 95,
     originalPrice: 110,
     unit: "200 g",
-    stock: 5, // Low stock!
+    stock: 5,
     minStockLevel: 12,
     image: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?w=500&auto=format&fit=crop&q=80",
     description: "Soft, spongy, traditional cottage cheese rich in high-quality protein for curries and tikka.",
@@ -147,43 +224,61 @@ const initialProducts = [
     isFeatured: true
   },
   {
-    id: "prod-10",
-    name: "Farm Fresh Brown Eggs (High Protein)",
-    category: "Dairy & Eggs",
-    price: 78,
-    originalPrice: 90,
-    unit: "6 pcs pack",
-    stock: 40,
-    minStockLevel: 15,
-    image: "https://images.unsplash.com/photo-1506976785307-8732e854ad03?w=500&auto=format&fit=crop&q=80",
-    description: "Naturally laid grain-fed brown eggs, rich in Omega-3 and natural protein.",
-    tags: ["eggs", "protein", "breakfast", "fitness"],
-    rating: 4.8,
-    salesCount: 390,
+    id: "prod-14",
+    name: "Amul Pure Cow Ghee",
+    category: "Dairy & Bakery",
+    isVeg: true,
+    price: 610,
+    originalPrice: 650,
+    unit: "1 Litre Tin",
+    stock: 18,
+    minStockLevel: 6,
+    image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=80",
+    description: "Aromatic golden cow ghee made from fresh cream, offering authentic desi flavor and natural aroma.",
+    tags: ["dairy", "ghee", "pure", "cooking", "ayurvedic"],
+    rating: 5.0,
+    salesCount: 190,
+    isFeatured: true
+  },
+  {
+    id: "prod-15",
+    name: "Amul Salted Table Butter",
+    category: "Dairy & Bakery",
+    isVeg: true,
+    price: 56,
+    originalPrice: 60,
+    unit: "100 g",
+    stock: 25,
+    minStockLevel: 10,
+    image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=80",
+    description: "Classic pasteurized table butter made with pure milk fat.",
+    tags: ["dairy", "butter", "breakfast", "cooking"],
+    rating: 4.9,
+    salesCount: 340,
     isFeatured: false
   },
   {
-    id: "prod-11",
-    name: "Nestle Dahi (Curd)",
-    category: "Dairy & Eggs",
+    id: "prod-16",
+    name: "Nestle Dahi (Probiotic Curd)",
+    category: "Dairy & Bakery",
+    isVeg: true,
     price: 35,
     originalPrice: 40,
     unit: "400 g cup",
-    stock: 18,
+    stock: 20,
     minStockLevel: 8,
     image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&auto=format&fit=crop&q=80",
-    description: "Creamy, thick and set curd cultured with beneficial gut-friendly probiotics.",
+    description: "Creamy, thick set curd cultured with beneficial gut-friendly probiotics.",
     tags: ["dairy", "curd", "dahi", "probiotic", "healthy"],
     rating: 4.7,
     salesCount: 195,
     isFeatured: false
   },
-
-  // 3. Bakery & Bread
   {
-    id: "prod-12",
+    id: "prod-17",
     name: "English Oven 100% Whole Wheat Bread",
-    category: "Bakery & Bread",
+    category: "Dairy & Bakery",
+    isVeg: true,
     price: 48,
     originalPrice: 55,
     unit: "400 g",
@@ -197,27 +292,29 @@ const initialProducts = [
     isFeatured: false
   },
   {
-    id: "prod-13",
+    id: "prod-18",
     name: "Soft Pav Buns (Pack of 6)",
-    category: "Bakery & Bread",
+    category: "Dairy & Bakery",
+    isVeg: true,
     price: 28,
     originalPrice: 32,
     unit: "6 pcs",
-    stock: 4, // Very low stock!
+    stock: 4,
     minStockLevel: 10,
     image: "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?w=500&auto=format&fit=crop&q=80",
-    description: "Fluffy, melt-in-mouth bakery pav buns ideal for pav bhaji, vada pav and misal.",
+    description: "Fluffy bakery pav buns ideal for pav bhaji, vada pav, and misal.",
     tags: ["bakery", "pav", "buns", "breakfast", "snack"],
     rating: 4.5,
     salesCount: 160,
     isFeatured: false
   },
 
-  // 4. Staples, Grains & Pulses
+  // 3. Staples & Grains (100% Pure Veg)
   {
-    id: "prod-14",
+    id: "prod-19",
     name: "Aashirvaad Shudh Chakki Atta",
     category: "Staples & Grains",
+    isVeg: true,
     price: 245,
     originalPrice: 280,
     unit: "5 kg",
@@ -231,9 +328,10 @@ const initialProducts = [
     isFeatured: true
   },
   {
-    id: "prod-15",
+    id: "prod-20",
     name: "India Gate Basmati Rice Rozzana",
     category: "Staples & Grains",
+    isVeg: true,
     price: 135,
     originalPrice: 165,
     unit: "1 kg",
@@ -247,9 +345,10 @@ const initialProducts = [
     isFeatured: false
   },
   {
-    id: "prod-16",
+    id: "prod-21",
     name: "Tata Sampann Unpolished Toor Dal",
     category: "Staples & Grains",
+    isVeg: true,
     price: 175,
     originalPrice: 195,
     unit: "1 kg",
@@ -263,9 +362,27 @@ const initialProducts = [
     isFeatured: true
   },
   {
-    id: "prod-17",
+    id: "prod-22",
+    name: "Tata Sampann Organic Moong Dal",
+    category: "Staples & Grains",
+    isVeg: true,
+    price: 165,
+    originalPrice: 185,
+    unit: "1 kg",
+    stock: 20,
+    minStockLevel: 8,
+    image: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=500&auto=format&fit=crop&q=80",
+    description: "Light, easily digestible yellow moong lentils rich in plant protein and dietary fiber.",
+    tags: ["staple", "dal", "moong", "healthy", "protein"],
+    rating: 4.8,
+    salesCount: 170,
+    isFeatured: false
+  },
+  {
+    id: "prod-23",
     name: "Fortune Sunlite Refined Sunflower Oil",
     category: "Staples & Grains",
+    isVeg: true,
     price: 145,
     originalPrice: 165,
     unit: "1 Litre Pouch",
@@ -279,9 +396,10 @@ const initialProducts = [
     isFeatured: false
   },
   {
-    id: "prod-18",
+    id: "prod-24",
     name: "Tata Salt Vacuum Evaporated Iodized Salt",
     category: "Staples & Grains",
+    isVeg: true,
     price: 28,
     originalPrice: 30,
     unit: "1 kg",
@@ -294,44 +412,13 @@ const initialProducts = [
     salesCount: 520,
     isFeatured: false
   },
-  {
-    id: "prod-19",
-    name: "Catch Coriander Powder (Dhaniya)",
-    category: "Staples & Grains",
-    price: 42,
-    originalPrice: 48,
-    unit: "200 g",
-    stock: 7, // Low stock
-    minStockLevel: 10,
-    image: "https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=500&auto=format&fit=crop&q=80",
-    description: "Aromatic low-temperature ground coriander powder giving delightful color and rich aroma.",
-    tags: ["spice", "staple", "curry", "flavour"],
-    rating: 4.6,
-    salesCount: 110,
-    isFeatured: false
-  },
 
-  // 5. Snacks & Beverages
+  // 4. Snacks & Beverages (100% Pure Veg)
   {
-    id: "prod-20",
-    name: "Bru Instant Coffee Jar",
-    category: "Snacks & Beverages",
-    price: 185,
-    originalPrice: 210,
-    unit: "100 g",
-    stock: 19,
-    minStockLevel: 8,
-    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=80",
-    description: "Rich blend of 70% coffee and 30% chicory roasted to perfection for an aromatic morning kick.",
-    tags: ["beverage", "coffee", "morning", "instant"],
-    rating: 4.8,
-    salesCount: 175,
-    isFeatured: false
-  },
-  {
-    id: "prod-21",
+    id: "prod-25",
     name: "Tata Tea Gold Royal Assam & Leaves",
     category: "Snacks & Beverages",
+    isVeg: true,
     price: 160,
     originalPrice: 185,
     unit: "250 g",
@@ -345,9 +432,27 @@ const initialProducts = [
     isFeatured: true
   },
   {
-    id: "prod-22",
+    id: "prod-26",
+    name: "Bru Instant Coffee Jar",
+    category: "Snacks & Beverages",
+    isVeg: true,
+    price: 185,
+    originalPrice: 210,
+    unit: "100 g",
+    stock: 19,
+    minStockLevel: 8,
+    image: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=80",
+    description: "Rich blend of 70% coffee and 30% chicory roasted to perfection for an aromatic morning kick.",
+    tags: ["beverage", "coffee", "morning", "instant"],
+    rating: 4.8,
+    salesCount: 175,
+    isFeatured: false
+  },
+  {
+    id: "prod-27",
     name: "Haldiram's Bhujia Sev",
     category: "Snacks & Beverages",
+    isVeg: true,
     price: 65,
     originalPrice: 75,
     unit: "200 g",
@@ -361,27 +466,29 @@ const initialProducts = [
     isFeatured: false
   },
   {
-    id: "prod-23",
-    name: "Epigamia Greek Yogurt (Wild Blueberry)",
+    id: "prod-28",
+    name: "Haldiram's Pure Ghee Kaju Katli",
     category: "Snacks & Beverages",
-    price: 55,
-    originalPrice: 65,
-    unit: "100 g",
-    stock: 3, // Very low stock
-    minStockLevel: 8,
-    image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&auto=format&fit=crop&q=80",
-    description: "High protein, creamy strained greek yogurt with luscious real blueberry puree.",
-    tags: ["snack", "healthy", "dessert", "fruit", "protein"],
-    rating: 4.6,
-    salesCount: 95,
-    isFeatured: false
+    isVeg: true,
+    price: 240,
+    originalPrice: 280,
+    unit: "250 g Box",
+    stock: 15,
+    minStockLevel: 6,
+    image: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?w=500&auto=format&fit=crop&q=80",
+    description: "Melt-in-mouth diamond-shaped cashew fudge made with premium cashews and pure desi ghee.",
+    tags: ["sweet", "dessert", "kaju", "mithai", "pure-veg"],
+    rating: 5.0,
+    salesCount: 245,
+    isFeatured: true
   },
 
-  // 6. Household & Cleaning
+  // 5. Household & Personal Care
   {
-    id: "prod-24",
+    id: "prod-29",
     name: "Vim Lemon Dishwash Liquid Gel",
     category: "Household & Cleaning",
+    isVeg: true,
     price: 110,
     originalPrice: 125,
     unit: "750 ml Bottle",
@@ -395,27 +502,10 @@ const initialProducts = [
     isFeatured: false
   },
   {
-    id: "prod-25",
-    name: "Surf Excel Matic Front Load Liquid Detergent",
-    category: "Household & Cleaning",
-    price: 230,
-    originalPrice: 260,
-    unit: "1 Litre",
-    stock: 16,
-    minStockLevel: 8,
-    image: "https://images.unsplash.com/photo-1584813470613-5b1c1cad3d69?w=500&auto=format&fit=crop&q=80",
-    description: "Advanced formulation that dissolves instantly and lifts tough stains in the washing machine.",
-    tags: ["cleaning", "laundry", "detergent", "household"],
-    rating: 4.9,
-    salesCount: 140,
-    isFeatured: false
-  },
-
-  // 7. Personal Care
-  {
-    id: "prod-26",
+    id: "prod-30",
     name: "Dettol Original Germ Protection Bathing Soap",
     category: "Personal Care",
+    isVeg: true,
     price: 145,
     originalPrice: 160,
     unit: "Pack of 4 (125g each)",
@@ -427,22 +517,6 @@ const initialProducts = [
     rating: 4.9,
     salesCount: 210,
     isFeatured: false
-  },
-  {
-    id: "prod-27",
-    name: "Colgate MaxFresh Peppermint Toothpaste",
-    category: "Personal Care",
-    price: 98,
-    originalPrice: 115,
-    unit: "150 g",
-    stock: 28,
-    minStockLevel: 10,
-    image: "https://images.unsplash.com/photo-1559599101-f09722fb4948?w=500&auto=format&fit=crop&q=80",
-    description: "Infused with cooling crystals that dissolve while brushing for an intense burst of fresh breath.",
-    tags: ["personal-care", "dental", "toothpaste", "freshness"],
-    rating: 4.7,
-    salesCount: 190,
-    isFeatured: false
   }
 ];
 
@@ -451,16 +525,16 @@ const initialOrders = [
     id: "SB-2026-1001",
     orderDate: "2026-11-20T10:15:00.000Z",
     customer: {
-      name: "Rahul Sharma",
-      email: "rahul.sharma@example.com",
+      name: "Abhi Patel",
+      email: "abhi.patel@example.com",
       phone: "+91 98765 43210",
-      address: "Flat 402, Green Meadows, Sector 14, Gurugram, HR",
+      address: "Flat 502, Shivalik Residency, Satellite, Ahmedabad, Gujarat - 380015",
       paymentMethod: "UPI"
     },
     items: [
-      { productId: "prod-14", name: "Aashirvaad Shudh Chakki Atta", price: 245, quantity: 1, unit: "5 kg", total: 245 },
-      { productId: "prod-16", name: "Tata Sampann Unpolished Toor Dal", price: 175, quantity: 2, unit: "1 kg", total: 350 },
-      { productId: "prod-7", name: "Amul Taaza Homogenised Toned Milk", price: 54, quantity: 2, unit: "1 Litre Tetra Pack", total: 108 }
+      { productId: "prod-19", name: "Aashirvaad Shudh Chakki Atta", price: 245, quantity: 1, unit: "5 kg", total: 245 },
+      { productId: "prod-21", name: "Tata Sampann Unpolished Toor Dal", price: 175, quantity: 2, unit: "1 kg", total: 350 },
+      { productId: "prod-12", name: "Amul Taaza Homogenised Toned Milk", price: 54, quantity: 2, unit: "1 Litre Tetra Pack", total: 108 }
     ],
     subtotal: 703,
     tax: 35.15,
@@ -473,16 +547,16 @@ const initialOrders = [
     id: "SB-2026-1002",
     orderDate: "2026-11-21T14:30:00.000Z",
     customer: {
-      name: "Pooja Mehta",
-      email: "pooja.mehta@example.com",
-      phone: "+91 98220 12345",
-      address: "B-12 Palm Grove Apartments, Bandra West, Mumbai, MH",
+      name: "Abhi Patel",
+      email: "abhi.patel@example.com",
+      phone: "+91 98765 43210",
+      address: "Flat 502, Shivalik Residency, Satellite, Ahmedabad, Gujarat - 380015",
       paymentMethod: "Credit Card"
     },
     items: [
       { productId: "prod-1", name: "Fresh Alphonso Mangoes (Ratnagiri)", price: 349, quantity: 2, unit: "1 kg", total: 698 },
-      { productId: "prod-9", name: "Fresh Malai Paneer Block", price: 95, quantity: 2, unit: "200 g", total: 190 },
-      { productId: "prod-12", name: "English Oven 100% Whole Wheat Bread", price: 48, quantity: 1, unit: "400 g", total: 48 }
+      { productId: "prod-13", name: "Fresh Malai Paneer Block", price: 95, quantity: 2, unit: "200 g", total: 190 },
+      { productId: "prod-17", name: "English Oven 100% Whole Wheat Bread", price: 48, quantity: 1, unit: "400 g", total: 48 }
     ],
     subtotal: 936,
     tax: 46.80,
@@ -495,17 +569,17 @@ const initialOrders = [
     id: "SB-2026-1003",
     orderDate: "2026-11-22T16:45:00.000Z",
     customer: {
-      name: "Amitabh Verma",
-      email: "amitabh.v@example.com",
-      phone: "+91 97112 88990",
-      address: "House 77, Road 4, Indiranagar, Bengaluru, KA",
+      name: "Pooja Mehta",
+      email: "pooja.mehta@example.com",
+      phone: "+91 98220 12345",
+      address: "B-12 Palm Grove Apartments, Bandra West, Mumbai, MH",
       paymentMethod: "Cash on Delivery"
     },
     items: [
       { productId: "prod-2", name: "Farm Fresh Desi Tomatoes", price: 38, quantity: 2, unit: "1 kg", total: 76 },
       { productId: "prod-4", name: "Pahadi Fresh Potatoes (Aloo)", price: 28, quantity: 2, unit: "1 kg", total: 56 },
-      { productId: "prod-18", name: "Tata Salt Vacuum Evaporated Iodized Salt", price: 28, quantity: 1, unit: "1 kg", total: 28 },
-      { productId: "prod-21", name: "Tata Tea Gold Royal Assam & Leaves", price: 160, quantity: 1, unit: "250 g", total: 160 }
+      { productId: "prod-24", name: "Tata Salt Vacuum Evaporated Iodized Salt", price: 28, quantity: 1, unit: "1 kg", total: 28 },
+      { productId: "prod-25", name: "Tata Tea Gold Royal Assam & Leaves", price: 160, quantity: 1, unit: "250 g", total: 160 }
     ],
     subtotal: 320,
     tax: 16.00,

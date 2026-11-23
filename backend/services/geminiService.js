@@ -195,7 +195,7 @@ Respond strictly in valid JSON:
   // Fallback family plan
   const staples = catalog.filter(p => p.category === 'Staples & Grains').slice(0, 4);
   const produce = catalog.filter(p => p.category === 'Fruits & Vegetables').slice(0, 4);
-  const dairy = catalog.filter(p => p.category === 'Dairy & Eggs').slice(0, 3);
+  const dairy = catalog.filter(p => p.category === 'Dairy & Bakery').slice(0, 3);
 
   const calculateCat = (arr, mult = 1) => arr.map(p => ({
     name: p.name,
@@ -364,15 +364,15 @@ Respond strictly in valid JSON:
   let used = ['Potato', 'Spinach', 'Spices'];
   let missing = [];
 
-  if (ingLower.includes('egg') || ingLower.includes('bread')) {
-    recipeTitle = 'Classic Masala Egg Toast & Sautéed Bell Peppers';
-    used = ['Eggs', 'Bread', 'Green Chilies'];
+  if (ingLower.includes('bread') || ingLower.includes('pav')) {
+    recipeTitle = 'Street-Style Bombay Pav Bhaji & Butter Pav';
+    used = ['Pav Buns', 'Potatoes', 'Butter'];
   } else if (ingLower.includes('paneer') || ingLower.includes('tomato')) {
-    recipeTitle = 'Restaurant-Style Paneer Makhani';
-    used = ['Paneer', 'Tomatoes', 'Butter'];
+    recipeTitle = 'Restaurant-Style Paneer Butter Masala';
+    used = ['Fresh Malai Paneer', 'Tomatoes', 'Amul Butter'];
   } else if (ingLower.includes('rice') || ingLower.includes('dal')) {
-    recipeTitle = 'Comforting Royal Tadka Khichdi with Ghee';
-    used = ['Basmati Rice', 'Toor Dal', 'Salt'];
+    recipeTitle = 'Comforting Royal Tadka Khichdi with Pure Cow Ghee';
+    used = ['Basmati Rice', 'Toor Dal', 'Amul Cow Ghee'];
   }
 
   // Find actual items in catalog for missing items
@@ -539,7 +539,7 @@ Provide a helpful response. If specific store items are recommended, mention the
   if (q.includes('budget') || q.includes('cheap') || q.includes('save')) {
     reply = "To shop smart on a budget, consider our staples pack! For example, Aashirvaad Chakki Atta (5kg for ₹245) and Tata Sampann Toor Dal (1kg for ₹175) offer great value. You can also use our **AI Budget Planner** in the top navigation to build a complete basket under your specific budget limit!";
   } else if (q.includes('recipe') || q.includes('cook') || q.includes('dinner')) {
-    reply = "I'd love to help you cook! Try out our **AI Recipe Generator** in the menu above: simply type what you have at home (like onions, potatoes, eggs, or paneer), and I will generate a step-by-step recipe and automatically identify any missing ingredients with 1-click cart addition.";
+    reply = "I'd love to help you cook! Try out our **AI Recipe Generator** in the menu above: simply type what you have at home (like onions, potatoes, paneer, or green peas), and I will generate a delicious 100% vegetarian step-by-step recipe and automatically identify any missing ingredients with 1-click cart addition.";
   } else if (q.includes('delivery') || q.includes('shipping') || q.includes('charge')) {
     reply = "SmartBasket offers **FREE delivery** on all orders above ₹499! For orders below ₹499, a nominal delivery fee of ₹40 applies. Orders are packed fresh and dispatched rapidly.";
   } else if (q.includes('store') || q.includes('keep') || q.includes('fresh')) {
@@ -706,7 +706,7 @@ Respond strictly in valid JSON:
         },
         {
           area: 'Bundling',
-          action: 'Create "Weekend Breakfast Combos" pairing slow-moving items with popular eggs and bread.',
+          action: 'Create "Pure Veg Breakfast Combos" pairing slow-moving items with popular paneer, butter, and pav.',
           expectedImpact: 'Accelerates slow-moving inventory turnover by 35%.'
         },
         {

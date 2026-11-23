@@ -12,8 +12,8 @@ export default function AiRecipeGenerator({ onAddMultipleToCart, onAddToCart }) 
   const [addedMissingSuccess, setAddedMissingSuccess] = useState(false);
 
   const quickPantryTags = [
-    'Potatoes', 'Onions', 'Tomatoes', 'Paneer', 'Eggs',
-    'Whole Wheat Bread', 'Toor Dal', 'Basmati Rice', 'Green Capsicum', 'Spinach'
+    'Potatoes', 'Onions', 'Tomatoes', 'Paneer', 'Green Peas',
+    'Whole Wheat Bread', 'Toor Dal', 'Basmati Rice', 'Green Capsicum', 'Spinach', 'Pure Cow Ghee'
   ];
 
   const handleToggleTag = (tag) => {
@@ -171,10 +171,10 @@ export default function AiRecipeGenerator({ onAddMultipleToCart, onAddToCart }) 
                   onChange={(e) => setDietary(e.target.value)}
                   className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-emerald-600"
                 >
-                  <option value="Vegetarian">Vegetarian</option>
-                  <option value="Vegan">Vegan</option>
-                  <option value="High Protein">High Protein</option>
-                  <option value="Eggitarian">With Eggs</option>
+                  <option value="Vegetarian">100% Vegetarian</option>
+                  <option value="Vegan">Vegan (Plant-Based)</option>
+                  <option value="High Protein">High Protein Veg</option>
+                  <option value="Jain (Satvik)">Jain (No Onion/Garlic)</option>
                 </select>
               </div>
             </div>

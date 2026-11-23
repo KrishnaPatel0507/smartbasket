@@ -26,12 +26,12 @@ export default function App() {
       const saved = localStorage.getItem('smartbasket_user');
       return saved ? JSON.parse(saved) : {
         id: 'user-customer',
-        name: 'Rahul Sharma',
+        name: 'Abhi Patel',
         email: 'user@smartbasket.com',
         role: 'customer'
       };
     } catch {
-      return { id: 'user-customer', name: 'Rahul Sharma', email: 'user@smartbasket.com', role: 'customer' };
+      return { id: 'user-customer', name: 'Abhi Patel', email: 'user@smartbasket.com', role: 'customer' };
     }
   });
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -72,8 +72,7 @@ export default function App() {
   const categories = [
     'All',
     'Fruits & Vegetables',
-    'Dairy & Eggs',
-    'Bakery & Bread',
+    'Dairy & Bakery',
     'Staples & Grains',
     'Snacks & Beverages',
     'Household & Cleaning',
@@ -304,9 +303,17 @@ export default function App() {
               <div className="absolute right-0 top-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
               
               <div className="relative z-10 max-w-2xl space-y-4">
-                <div className="inline-flex items-center gap-2 bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-bold">
-                  <Sparkles className="w-3.5 h-3.5" />
-                  <span>Next-Gen Smart Grocery Experience</span>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-2 bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 px-3 py-1 rounded-full text-xs font-bold">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Next-Gen Smart Grocery Experience</span>
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 bg-emerald-500/30 text-white border border-emerald-300/40 px-3 py-1 rounded-full text-xs font-bold">
+                    <span className="w-3 h-3 border-2 border-emerald-300 rounded-xs flex items-center justify-center p-0.5">
+                      <span className="w-1.5 h-1.5 bg-emerald-300 rounded-full"></span>
+                    </span>
+                    <span>100% Pure Vegetarian Store</span>
+                  </div>
                 </div>
 
                 <h1 className="text-3xl sm:text-5xl font-black tracking-tight leading-tight">
@@ -315,7 +322,7 @@ export default function App() {
                 </h1>
 
                 <p className="text-sm sm:text-base text-emerald-100/90 leading-relaxed max-w-xl">
-                  Shop daily staples in INR with automated stock accuracy, plan weekly baskets strictly within your budget, and generate recipes from leftover ingredients with 1-click cart addition.
+                  Shop 100% pure vegetarian daily staples in INR with automated stock accuracy, plan weekly baskets strictly within your budget, and generate recipes from leftover ingredients with 1-click cart addition.
                 </p>
 
                 <div className="flex flex-wrap gap-3 pt-2">

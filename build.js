@@ -7,7 +7,11 @@ console.log('Current working directory:', process.cwd());
 
 if (fs.existsSync(path.join(process.cwd(), 'frontend'))) {
   console.log('Detected root directory. Building frontend...');
-  execSync('cd frontend && npm install && npm run build', { stdio: 'inherit' });
+  const frontendModules = path.join(process.cwd(), 'frontend', 'node_modules');
+  if (!fs.existsSync(frontendModules)) {
+    execSync('npm --prefix frontend install', { stdio: 'inherit' });
+  }
+  execSync('npm --prefix frontend run build', { stdio: 'inherit' });
   
   const frontendDist = path.join(process.cwd(), 'frontend', 'dist');
   const rootDist = path.join(process.cwd(), 'dist');
