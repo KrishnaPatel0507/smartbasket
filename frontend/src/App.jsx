@@ -9,16 +9,35 @@ import AiBudgetPlanner from './components/AiBudgetPlanner';
 import AiRecipeGenerator from './components/AiRecipeGenerator';
 import AdminDashboard from './components/AdminDashboard';
 import FloatingChatbot from './components/FloatingChatbot';
+import AuthModal from './components/AuthModal';
 import { fetchProducts, fetchAiStatus, fetchLowStockProducts } from './services/api';
 import {
   Search, SlidersHorizontal, Sparkles, ChefHat, ArrowRight,
   ShieldCheck, Truck, RefreshCw, AlertTriangle, CheckCircle2,
-  HeartHandshake, HelpCircle
+  HeartHandshake, HelpCircle, ShieldAlert, Lock, Crown, User
 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('store'); // 'store' | 'assistant' | 'recipe' | 'admin'
   
+  // User Authentication State (Customer vs Admin)
+  const [currentUser, setCurrentUser] = useState(() => {
+    try {
+      const saved = localStorage.getItem('smartbasket_user');
+      return saved ? JSON.parse(saved) : {
+        id: 'user-customer',
+        name: 'Rahul Sharma',
+        email: 'user@smartbasket.com',
+        role: 'customer'
+      };
+    } catch {
+      return { id: 'user-customer', name: 'Rahul Sharma', email: 'user@smartbasket.com', role: 'customer' };
+    }
+  });
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalRole, setAuthModalRole] = useState('customer');
+  const [authModalMessage, setAuthModalMessage] = useState('');
+
   // Products & Filtering
   const [products, setProducts] = useState([]);
   const [loadingProducts, setLoadingProducts] = useState(true);
@@ -61,6 +80,19 @@ export default function App() {
     'Personal Care'
   ];
 
+  // Save auth user to localStorage
+  useEffect(() => {
+    try {
+      if (currentUser) {
+        localStorage.setItem('smartbasket_user', JSON.stringify(currentUser));
+      } else {
+        localStorage.removeItem('smartbasket_user');
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [currentUser]);
+
   // Save cart to localStorage
   useEffect(() => {
     try {
@@ -98,6 +130,26 @@ export default function App() {
       setLowStockCount(lowStockData.count || 0);
     } catch (err) {
       console.error('Failed to fetch status:', err);
+    }
+  };
+
+  const handleOpenAuth = (role = 'customer', message = '') => {
+    setAuthModalRole(role);
+    setAuthModalMessage(message);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleLogout = () => {
+    setCurrentUser(null);
+    if (activeTab === 'admin') {
+      setActiveTab('store');
+    }
+  };
+
+  const handleAuthSuccess = (user) => {
+    setCurrentUser(user);
+    if (user.role === 'admin') {
+      setActiveTab('admin');
     }
   };
 
@@ -145,7 +197,6 @@ export default function App() {
         if (idx !== -1) {
           newCart[idx].quantity += (newItem.quantity || 1);
         } else {
-          // find full product info if available
           const fullProd = products.find(p => p.id === newItem.id);
           newCart.push({
             id: newItem.id,
@@ -174,11 +225,9 @@ export default function App() {
     setCart([]);
     setActiveInvoice(order);
 
-    // Refresh stock and low stock count
     loadProducts();
     checkSystemStatus();
 
-    // Trigger alert banner if items hit low stock
     if (alerts && alerts.length > 0) {
       setSystemAlertBanner({
         message: `Inventory Alert: Order confirmation triggered low stock threshold for ${alerts.length} product(s). Restock alert logged!`,
@@ -199,7 +248,7 @@ export default function App() {
     if (sortBy === 'price-low') return a.price - b.price;
     if (sortBy === 'price-high') return b.price - a.price;
     if (sortBy === 'rating') return b.rating - a.rating;
-    return (b.salesCount || 0) - (a.salesCount || 0); // popular default
+    return (b.salesCount || 0) - (a.salesCount || 0);
   });
 
   const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -208,7 +257,7 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#f8faf8] text-slate-800 flex flex-col antialiased selection:bg-emerald-500 selection:text-white">
       
-      {/* Navbar */}
+      {/* Navbar with User State */}
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -217,6 +266,9 @@ export default function App() {
         setIsCartOpen={setIsCartOpen}
         lowStockCount={lowStockCount}
         aiStatus={aiStatus}
+        currentUser={currentUser}
+        onOpenAuth={handleOpenAuth}
+        onLogout={handleLogout}
       />
 
       {/* Real-time System Automation Alert Banner */}
@@ -228,7 +280,10 @@ export default function App() {
               <span>{systemAlertBanner.message}</span>
             </div>
             <button
-              onClick={() => setActiveTab('admin')}
+              onClick={() => {
+                if (currentUser?.role === 'admin') setActiveTab('admin');
+                else handleOpenAuth('admin', 'Admin login required to view inventory alerts.');
+              }}
               className="px-2.5 py-0.5 bg-slate-950 text-amber-300 rounded-md text-[11px] hover:bg-slate-900 cursor-pointer"
             >
               View in Admin Dashboard
@@ -445,16 +500,90 @@ export default function App() {
           />
         )}
 
-        {/* VIEW 4: ADMIN DASHBOARD */}
+        {/* VIEW 4: ADMIN DASHBOARD (PROTECTED) */}
         {activeTab === 'admin' && (
-          <AdminDashboard
-            products={products}
-            onRefreshProducts={loadProducts}
-            onOpenInvoice={(order) => setActiveInvoice(order)}
-          />
+          currentUser?.role === 'admin' ? (
+            <AdminDashboard
+              products={products}
+              onRefreshProducts={loadProducts}
+              onOpenInvoice={(order) => setActiveInvoice(order)}
+            />
+          ) : (
+            /* Protected Access Screen when non-admin accesses Admin tab */
+            <div className="max-w-xl mx-auto my-12 bg-white rounded-3xl border border-slate-200 shadow-xl p-8 text-center space-y-5 animate-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 rounded-3xl bg-amber-100 text-amber-800 flex items-center justify-center mx-auto shadow-inner">
+                <Lock className="w-8 h-8" />
+              </div>
+
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                  Role-Based Security Gate
+                </span>
+                <h3 className="text-2xl font-black text-slate-900 mt-2">
+                  Store Admin Access Required
+                </h3>
+                <p className="text-xs text-slate-600 mt-1 max-w-sm mx-auto leading-relaxed">
+                  The Admin Dashboard contains sensitive store operations, sales metrics, inventory restock priority analysis, and live audit logs.
+                </p>
+              </div>
+
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-left text-xs space-y-2">
+                <div className="flex justify-between items-center text-slate-500">
+                  <span>Current logged in user:</span>
+                  <strong className="text-slate-800">{currentUser?.name || 'Guest'}</strong>
+                </div>
+                <div className="flex justify-between items-center text-slate-500">
+                  <span>Current role:</span>
+                  <span className="bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full text-[10px]">
+                    {currentUser?.role || 'Guest'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex flex-col gap-2">
+                <button
+                  onClick={() => {
+                    setCurrentUser({
+                      id: 'user-admin',
+                      name: 'Admin Manager',
+                      email: 'admin@smartbasket.com',
+                      role: 'admin'
+                    });
+                  }}
+                  className="w-full py-3 bg-slate-900 hover:bg-slate-800 active:scale-98 text-white font-extrabold text-xs rounded-xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  <Crown className="w-4 h-4 text-amber-400" />
+                  <span>1-Click Switch to Store Admin Account</span>
+                </button>
+
+                <button
+                  onClick={() => handleOpenAuth('admin', 'Sign in with store admin credentials')}
+                  className="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all cursor-pointer"
+                >
+                  Sign In with Different Account
+                </button>
+
+                <button
+                  onClick={() => setActiveTab('store')}
+                  className="text-xs font-semibold text-emerald-700 hover:underline pt-1 cursor-pointer"
+                >
+                  Return to Customer Store
+                </button>
+              </div>
+            </div>
+          )
         )}
 
       </main>
+
+      {/* Auth Modal for User & Admin Login */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onAuthSuccess={handleAuthSuccess}
+        initialRole={authModalRole}
+        message={authModalMessage}
+      />
 
       {/* Floating Chatbot Widget */}
       <FloatingChatbot cart={cart} />
