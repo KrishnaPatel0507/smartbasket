@@ -41,9 +41,13 @@ router.post('/ai-restock-report', async (req, res) => {
       salesAnalytics: analytics
     });
 
+    if (report?.data?.restockItems?.length > 0) {
+      db.saveDraftPurchaseOrder(report.data);
+    }
+
     db.addLog(
       'AI_RESTOCK_ANALYSIS',
-      `Gemini AI evaluated ${lowStock.length} low-stock items and generated Restock Priority recommendations.`,
+      `Gemini AI evaluated ${lowStock.length} low-stock items and generated Restock Priority recommendations. Draft PO created for Admin approval.`,
       'info',
       { urgency: report.data.urgencyLevel, totalEstCost: report.data.estimatedTotalInvestment }
     );

@@ -1,4 +1,84 @@
-const { GoogleGenAI } = require('@google/genai');
+const { GoogleGenAI, Type } = require('@google/genai');
+
+// Native response schemas for robust, non-hallucinated LLM reasoning
+const restockSchema = {
+  type: Type.OBJECT,
+  properties: {
+    executiveSummary: { type: Type.STRING },
+    urgencyLevel: { type: Type.STRING, enum: ['CRITICAL', 'MODERATE', 'NORMAL'] },
+    restockItems: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          productId: { type: Type.STRING },
+          recommendedReorderQty: { type: Type.INTEGER },
+          priority: { type: Type.STRING, enum: ['HIGH', 'MEDIUM', 'LOW'] },
+          justification: { type: Type.STRING }
+        },
+        required: ['productId', 'recommendedReorderQty', 'priority', 'justification']
+      }
+    }
+  },
+  required: ['executiveSummary', 'urgencyLevel', 'restockItems']
+};
+
+const budgetSchema = {
+  type: Type.OBJECT,
+  properties: {
+    title: { type: Type.STRING },
+    explanation: { type: Type.STRING },
+    savingsTip: { type: Type.STRING },
+    items: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          productId: { type: Type.STRING },
+          quantity: { type: Type.INTEGER },
+          reason: { type: Type.STRING }
+        },
+        required: ['productId', 'quantity', 'reason']
+      }
+    }
+  },
+  required: ['title', 'explanation', 'items']
+};
+
+const recipeSchema = {
+  type: Type.OBJECT,
+  properties: {
+    recipeTitle: { type: Type.STRING },
+    description: { type: Type.STRING },
+    prepTime: { type: Type.STRING },
+    cookTime: { type: Type.STRING },
+    servings: { type: Type.STRING },
+    difficulty: { type: Type.STRING, enum: ['Easy', 'Medium', 'Advanced'] },
+    availableIngredientsUsed: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING }
+    },
+    instructions: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING }
+    },
+    missingIngredients: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          name: { type: Type.STRING },
+          requiredQuantity: { type: Type.STRING },
+          matchedProductId: { type: Type.STRING },
+          reason: { type: Type.STRING }
+        },
+        required: ['name', 'requiredQuantity', 'matchedProductId', 'reason']
+      }
+    },
+    chefTip: { type: Type.STRING }
+  },
+  required: ['recipeTitle', 'instructions', 'missingIngredients']
+};
 
 function getAiClient() {
   const apiKey = process.env.GEMINI_API_KEY || process.env['Grosary store API'] || process.env['GROCERY_STORE_API'];
@@ -77,14 +157,52 @@ You MUST respond strictly with valid JSON conforming to this schema (no extra te
     try {
       const response = await client.models.generateContent({
         model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-        contents: prompt
+        contents: `You are an expert AI Grocery & Budget Planner for SmartBasket (India). Select the best items from our live catalog for a budget of ₹${budget} INR, family size of ${familySize}, dietary: ${diet}, period: ${period}.\nLive Catalog:\n${catalogSummary}`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: budgetSchema,
+          temperature: 0.2
+        }
       });
-      const parsed = cleanJsonResponse(response.text);
+      const parsed = JSON.parse(response.text);
       if (parsed && Array.isArray(parsed.items)) {
-        return { source: 'gemini', data: parsed };
+        // Compute deterministic pricing and totals in Node.js (never trust LLM for arithmetic)
+        const productMap = new Map(catalog.map(p => [p.id, p]));
+        const budgetNum = Number(budget) || 1500;
+        let totalCost = 0;
+        const enrichedItems = [];
+        for (const item of parsed.items) {
+          const prod = productMap.get(item.productId) || catalog.find(p => p.id === item.productId);
+          if (prod) {
+            const qty = Math.max(1, Number(item.quantity) || 1);
+            const lineTotal = prod.price * qty;
+            totalCost += lineTotal;
+            enrichedItems.push({
+              productId: prod.id,
+              name: prod.name,
+              category: prod.category,
+              price: prod.price,
+              unit: prod.unit,
+              quantity: qty,
+              lineTotal,
+              reason: item.reason || 'Nutritional staple'
+            });
+          }
+        }
+        return {
+          source: 'gemini',
+          data: {
+            title: parsed.title || `Smart Budget Basket (₹${budget})`,
+            explanation: parsed.explanation || `Balanced basket for ${familySize}`,
+            totalEstimatedCost: totalCost,
+            budgetRemaining: Math.max(0, budgetNum - totalCost),
+            savingsTip: parsed.savingsTip || 'Buying staples in larger packs saves up to 18%.',
+            items: enrichedItems
+          }
+        };
       }
     } catch (err) {
-      console.warn('Gemini API call failed for budget list, using intelligent fallback:', err.message);
+      console.warn('Gemini native schema budget list failed, using fallback:', err.message);
     }
   }
 
@@ -349,12 +467,39 @@ Respond strictly in valid JSON:
     try {
       const response = await client.models.generateContent({
         model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-        contents: prompt
+        contents: `You are the SmartBasket Master Chef & Grocery Matcher AI. Create an authentic pure vegetarian recipe using available ingredients: "${ingredients}", Meal: ${mealType}, Cuisine: ${cuisine}, Dietary: ${dietary}.\nMatch missing ingredients strictly from our store catalog:\n${catalogSummary}`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: recipeSchema,
+          temperature: 0.3
+        }
       });
-      const parsed = cleanJsonResponse(response.text);
-      if (parsed) return { source: 'gemini', data: parsed };
+      const parsed = JSON.parse(response.text);
+      if (parsed && Array.isArray(parsed.missingIngredients)) {
+        // Deterministic catalog enrichment in Node.js
+        const productMap = new Map(catalog.map(p => [p.id, p]));
+        const enrichedMissing = parsed.missingIngredients.map(item => {
+          const prod = productMap.get(item.matchedProductId) || catalog.find(p => p.name.toLowerCase().includes((item.name || '').toLowerCase()));
+          return {
+            name: item.name,
+            requiredQuantity: item.requiredQuantity || '1 unit',
+            matchedProductId: prod?.id || null,
+            matchedProductName: prod?.name || item.name,
+            matchedProductPrice: prod?.price || 50,
+            matchedProductUnit: prod?.unit || '1 pack',
+            reason: item.reason || 'Essential recipe ingredient'
+          };
+        });
+        return {
+          source: 'gemini',
+          data: {
+            ...parsed,
+            missingIngredients: enrichedMissing
+          }
+        };
+      }
     } catch (err) {
-      console.warn('Gemini recipe generator error:', err.message);
+      console.warn('Gemini native schema recipe generator error, fallback:', err.message);
     }
   }
 
@@ -557,46 +702,52 @@ Provide a helpful response. If specific store items are recommended, mention the
 // 7. AI Restocking Priority Analysis (Admin Inventory Automation)
 async function generateRestockPriorityReport({ lowStockProducts = [], salesAnalytics = {} }) {
   const client = getAiClient();
-  const summary = lowStockProducts.map(p => `- ${p.name} (Current Stock: ${p.stock}, Safety Threshold: ${p.minStockLevel}, Price: ₹${p.price}, Sales: ${p.salesCount || 0})`).join('\n');
+  const summary = lowStockProducts.map(p => `- ID: ${p.id} | ${p.name} | Current Stock: ${p.stock}/${p.minStockLevel} | Sales: ${p.salesCount || 0}`).join('\n');
 
-  const prompt = `You are the Chief Inventory Automation AI for SmartBasket.
-Analyze the following products currently operating at or below minimum safety stock levels:
-${summary || 'No critical low-stock items detected'}
-
-Task:
-Evaluate sales velocity, essential nature of daily staples, and restock urgency.
-Categorize each into High, Medium, or Low Restock Priority, recommend the exact reorder quantity, and calculate the estimated replenishment investment.
-
-Respond strictly in valid JSON:
-{
-  "executiveSummary": "Concise 2-sentence inventory health status and replenishment strategy",
-  "urgencyLevel": "CRITICAL | MODERATE | NORMAL",
-  "estimatedTotalInvestment": number,
-  "restockItems": [
-    {
-      "productId": "string",
-      "name": "string",
-      "currentStock": number,
-      "minStockLevel": number,
-      "recommendedReorderQty": number,
-      "priority": "HIGH | MEDIUM | LOW",
-      "costPerUnit": number,
-      "totalReorderCost": number,
-      "justification": "Why this priority was assigned based on daily demand and stock depletion"
-    }
-  ]
-}`;
-
-  if (client) {
+  if (client && lowStockProducts.length > 0) {
     try {
       const response = await client.models.generateContent({
         model: process.env.GEMINI_MODEL || 'gemini-2.5-flash',
-        contents: prompt
+        contents: `You are Chief Inventory Automation AI for SmartBasket. Analyze low-stock grocery products and recommend reorder quantities based on daily sales velocity and buffer health:\n${summary}`,
+        config: {
+          responseMimeType: 'application/json',
+          responseSchema: restockSchema,
+          temperature: 0.2
+        }
       });
-      const parsed = cleanJsonResponse(response.text);
-      if (parsed) return { source: 'gemini', data: parsed };
+      const aiResult = JSON.parse(response.text);
+      const productMap = new Map(lowStockProducts.map(p => [p.id, p]));
+      let estimatedTotalInvestment = 0;
+      const enrichedItems = (aiResult.restockItems || []).map(item => {
+        const prod = productMap.get(item.productId) || lowStockProducts.find(p => p.id === item.productId);
+        const costPerUnit = Math.round((prod?.price || 50) * 0.75);
+        const qty = Math.max(10, item.recommendedReorderQty || 20);
+        const totalReorderCost = Number((costPerUnit * qty).toFixed(2));
+        estimatedTotalInvestment += totalReorderCost;
+        return {
+          productId: prod?.id || item.productId,
+          name: prod?.name || 'Essential Item',
+          currentStock: prod?.stock ?? 0,
+          minStockLevel: prod?.minStockLevel ?? 10,
+          recommendedReorderQty: qty,
+          priority: item.priority || 'HIGH',
+          costPerUnit,
+          totalReorderCost,
+          justification: item.justification || 'Buffer replenishment based on sales velocity'
+        };
+      });
+
+      return {
+        source: 'gemini',
+        data: {
+          executiveSummary: aiResult.executiveSummary || 'Automated replenishment analysis ready for Store Admin approval.',
+          urgencyLevel: aiResult.urgencyLevel || 'MODERATE',
+          estimatedTotalInvestment: Number(estimatedTotalInvestment.toFixed(2)),
+          restockItems: enrichedItems
+        }
+      };
     } catch (err) {
-      console.warn('Gemini restock report error:', err.message);
+      console.warn('Gemini native schema restock report error, fallback:', err.message);
     }
   }
 

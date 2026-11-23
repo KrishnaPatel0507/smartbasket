@@ -221,3 +221,40 @@ export async function generateAiSalesSummary() {
   if (!res.ok) throw new Error('Failed to generate AI sales summary');
   return res.json();
 }
+
+export async function fetchPurchaseOrders() {
+  const res = await fetch(`${API_BASE}/purchase-orders`);
+  if (!res.ok) throw new Error('Failed to fetch purchase orders');
+  return res.json();
+}
+
+export async function approvePurchaseOrder(id, adminName = 'Krishna Patel') {
+  const res = await fetch(`${API_BASE}/purchase-orders/${id}/approve`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-role': 'admin',
+      'x-user-email': 'admin@smartbasket.com'
+    },
+    body: JSON.stringify({ adminName })
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.message || 'Failed to approve purchase order');
+  }
+  return res.json();
+}
+
+export async function triggerAutomationJob(jobType) {
+  const res = await fetch(`${API_BASE}/purchase-orders/trigger-job`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-user-role': 'admin',
+      'x-user-email': 'admin@smartbasket.com'
+    },
+    body: JSON.stringify({ jobType })
+  });
+  if (!res.ok) throw new Error('Failed to run automation job');
+  return res.json();
+}

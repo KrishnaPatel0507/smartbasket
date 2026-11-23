@@ -8,17 +8,24 @@ import {
   fetchSalesAnalytics, generateAiSalesSummary,
   fetchLowStockProducts, fetchAutomationLogs, generateAiRestockReport,
   restockProduct, fetchOrders, updateOrderStatus,
-  createProduct, updateProduct, deleteProduct
+  createProduct, updateProduct, deleteProduct,
+  fetchPurchaseOrders, approvePurchaseOrder, triggerAutomationJob
 } from '../services/api';
 
 export default function AdminDashboard({ products, onRefreshProducts, onOpenInvoice }) {
-  const [adminTab, setAdminTab] = useState('sales'); // 'sales' | 'inventory' | 'products' | 'orders' | 'logs'
+  const [adminTab, setAdminTab] = useState('sales'); // 'sales' | 'pos' | 'inventory' | 'products' | 'orders' | 'logs'
   
   // Sales Analytics & AI Insights State
   const [analytics, setAnalytics] = useState(null);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
   const [aiSummary, setAiSummary] = useState(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
+
+  // Purchase Orders & Autonomous Background Pipelines
+  const [purchaseOrders, setPurchaseOrders] = useState([]);
+  const [approvingPoId, setApprovingPoId] = useState(null);
+  const [runningJob, setRunningJob] = useState(false);
+  const [jobTriggerMessage, setJobTriggerMessage] = useState(null);
 
   // Inventory Automation State
   const [lowStockList, setLowStockList] = useState([]);
@@ -58,20 +65,52 @@ export default function AdminDashboard({ products, onRefreshProducts, onOpenInvo
   const loadAllAdminData = async () => {
     setLoadingAnalytics(true);
     try {
-      const [salesData, lowStockData, ordersData, logsData] = await Promise.all([
+      const [salesData, lowStockData, ordersData, logsData, poData] = await Promise.all([
         fetchSalesAnalytics(),
         fetchLowStockProducts(),
         fetchOrders(),
-        fetchAutomationLogs()
+        fetchAutomationLogs(),
+        fetchPurchaseOrders().catch(() => ({ purchaseOrders: [] }))
       ]);
       setAnalytics(salesData);
       setLowStockList(lowStockData.lowStockProducts || []);
       setOrders(ordersData.orders || []);
       setLogs(logsData.logs || []);
+      setPurchaseOrders(poData.purchaseOrders || []);
     } catch (err) {
       console.error('Failed to load admin data:', err);
     } finally {
       setLoadingAnalytics(false);
+    }
+  };
+
+  const handleApprovePO = async (poId) => {
+    setApprovingPoId(poId);
+    try {
+      await approvePurchaseOrder(poId, 'Krishna Patel');
+      await loadAllAdminData();
+      if (onRefreshProducts) onRefreshProducts();
+    } catch (err) {
+      alert('Error approving PO: ' + err.message);
+    } finally {
+      setApprovingPoId(null);
+    }
+  };
+
+  const handleTriggerJob = async (jobType) => {
+    setRunningJob(true);
+    setJobTriggerMessage(null);
+    try {
+      const res = await triggerAutomationJob(jobType);
+      setJobTriggerMessage(jobType === 'reorder-nudges'
+        ? `✅ Retention Job Executed! Generated ${res.nudgesCount || 0} customer refill suggestions.`
+        : `✅ Clearance Job Executed! Generated promotional bundle clearance pairings.`
+      );
+      await loadAllAdminData();
+    } catch (err) {
+      setJobTriggerMessage(`❌ Job execution failed: ${err.message}`);
+    } finally {
+      setRunningJob(false);
     }
   };
 
@@ -296,6 +335,7 @@ export default function AdminDashboard({ products, onRefreshProducts, onOpenInvo
       <div className="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
         {[
           { id: 'sales', label: '📊 Sales & AI Insights', badge: null },
+          { id: 'pos', label: '🤖 AI Purchase Orders', badge: purchaseOrders.filter(p => p.status === 'PENDING_ADMIN_APPROVAL').length || null },
           { id: 'inventory', label: '📦 Inventory Automation', badge: lowStockList.length > 0 ? lowStockList.length : null },
           { id: 'products', label: '🛍️ Catalog Management', badge: products.length },
           { id: 'orders', label: '📋 Orders & Invoices', badge: orders.length },
@@ -491,6 +531,168 @@ export default function AdminDashboard({ products, onRefreshProducts, onOpenInvo
             </div>
           </div>
 
+        </div>
+      )}
+
+      {/* --- TAB: AUTONOMOUS PURCHASE ORDERS (AI DRAFT POs) --- */}
+      {adminTab === 'pos' && (
+        <div className="space-y-6">
+          {/* Header Card */}
+          <div className="bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white p-6 sm:p-7 rounded-3xl shadow-xl border border-emerald-900/30">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-5 border-b border-white/10">
+              <div>
+                <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold mb-1">
+                  <Sparkles className="w-4 h-4 animate-pulse" />
+                  <span>Closed-Loop Event Automation</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-black">
+                  Autonomous Purchase Orders & Supply Chain Pipelines
+                </h3>
+                <p className="text-xs text-slate-300 mt-0.5">
+                  Orders trigger real-time stock deductions. When safety buffer is breached, AI autonomously generates replenishment POs with wholesale budgets for Krishna Patel approval.
+                </p>
+              </div>
+              <button
+                onClick={loadAllAdminData}
+                className="flex items-center gap-1.5 px-3.5 py-2 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-xl transition-all cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Sync POs</span>
+              </button>
+            </div>
+
+            {/* Autonomous Background Jobs (Cron Simulation) */}
+            <div className="mt-5 pt-2">
+              <p className="text-xs font-bold text-emerald-300 uppercase tracking-wider mb-2.5">
+                ⚡ Autonomous Scheduled Retail Tasks
+              </p>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() => handleTriggerJob('reorder-nudges')}
+                  disabled={runningJob}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer disabled:opacity-50"
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>Execute Customer Reorder Nudges Job</span>
+                </button>
+
+                <button
+                  onClick={() => handleTriggerJob('dead-stock-clearance')}
+                  disabled={runningJob}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-amber-300 rounded-xl text-xs font-bold border border-amber-400/30 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  <AlertTriangle className="w-3.5 h-3.5" />
+                  <span>Execute Dead-Stock Clearance Tagger</span>
+                </button>
+              </div>
+
+              {jobTriggerMessage && (
+                <div className="mt-3 p-3 bg-white/10 border border-white/20 rounded-xl text-xs text-emerald-200">
+                  {jobTriggerMessage}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Purchase Orders List */}
+          <div className="space-y-4">
+            {purchaseOrders.length === 0 ? (
+              <div className="bg-white p-12 text-center rounded-3xl border border-slate-200 shadow-xs">
+                <Package className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                <h4 className="font-bold text-slate-700 text-base">No Purchase Orders Generated Yet</h4>
+                <p className="text-xs text-slate-400 max-w-md mx-auto mt-1">
+                  Purchase orders are created autonomously when customer checkouts cause inventory to drop below safety thresholds.
+                </p>
+              </div>
+            ) : (
+              purchaseOrders.map((po) => {
+                const isPending = po.status === 'PENDING_ADMIN_APPROVAL';
+                return (
+                  <div
+                    key={po.id}
+                    className={`bg-white rounded-3xl border p-6 shadow-xs space-y-4 transition-all ${
+                      isPending ? 'border-amber-300 ring-2 ring-amber-100' : 'border-slate-200'
+                    }`}
+                  >
+                    {/* PO Header */}
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pb-4 border-b border-slate-100">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-black text-slate-900 text-lg">{po.id}</h4>
+                          <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                            po.urgencyLevel === 'CRITICAL' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            Urgency: {po.urgencyLevel}
+                          </span>
+                          <span className={`text-[10px] font-black px-2.5 py-0.5 rounded-full ${
+                            isPending ? 'bg-amber-500 text-white' : 'bg-emerald-600 text-white'
+                          }`}>
+                            {isPending ? '⏳ Awaiting Admin Approval' : '✅ Approved & Restocked'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">
+                          Created {new Date(po.createdAt).toLocaleString('en-IN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })} • {po.executiveSummary}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <div className="text-right">
+                          <p className="text-[11px] text-slate-400 font-semibold">Total Reorder Investment</p>
+                          <p className="text-xl font-black text-slate-900">₹{po.totalAmount?.toLocaleString('en-IN')}</p>
+                        </div>
+
+                        {isPending && (
+                          <button
+                            onClick={() => handleApprovePO(po.id)}
+                            disabled={approvingPoId === po.id}
+                            className="flex items-center gap-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 active:scale-98 text-white text-xs font-black rounded-xl shadow-md transition-all cursor-pointer disabled:opacity-50"
+                          >
+                            <CheckCircle2 className="w-4 h-4" />
+                            <span>{approvingPoId === po.id ? 'Replenishing...' : '1-Click Approve & Restock'}</span>
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* PO Items Table */}
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-xs text-left">
+                        <thead className="bg-slate-50 text-slate-500 font-bold uppercase tracking-wider text-[10px]">
+                          <tr>
+                            <th className="py-2.5 px-3 rounded-l-xl">Item</th>
+                            <th className="py-2.5 px-3">Current Stock / Min</th>
+                            <th className="py-2.5 px-3">Reorder Qty</th>
+                            <th className="py-2.5 px-3">Wholesale / Unit</th>
+                            <th className="py-2.5 px-3">Subtotal</th>
+                            <th className="py-2.5 px-3 rounded-r-xl">AI Justification</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                          {(po.items || []).map((item, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50/50">
+                              <td className="py-2.5 px-3 font-bold text-slate-800">{item.name}</td>
+                              <td className="py-2.5 px-3 text-rose-600 font-bold">{item.currentStock} / {item.minStockLevel || 10}</td>
+                              <td className="py-2.5 px-3 font-black text-emerald-700">+{item.recommendedReorderQty} units</td>
+                              <td className="py-2.5 px-3 text-slate-600">₹{item.costPerUnit}</td>
+                              <td className="py-2.5 px-3 font-bold text-slate-900">₹{item.totalReorderCost}</td>
+                              <td className="py-2.5 px-3 text-slate-500 text-[11px] italic max-w-xs">{item.justification}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {!isPending && (
+                      <div className="pt-2 text-[11px] text-emerald-700 font-medium flex items-center gap-1.5">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>Approved by {po.approvedBy || 'Krishna Patel'} on {new Date(po.approvedAt).toLocaleString('en-IN')}. Stock added to live store.</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       )}
 

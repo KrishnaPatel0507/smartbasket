@@ -1,14 +1,17 @@
 const fs = require('fs');
 const path = require('path');
+const EventEmitter = require('events');
 const { initialProducts, initialOrders } = require('./seedProducts');
 
 const DATA_FILE = path.join(__dirname, 'store.json');
+const storeEvents = new EventEmitter();
 
 class StoreDatabase {
   constructor() {
     this.data = {
       products: [],
       orders: [],
+      purchaseOrders: [],
       automationLogs: []
     };
     this.init();
@@ -26,6 +29,9 @@ class StoreDatabase {
         if (!this.data.orders) {
           this.data.orders = [...initialOrders];
         }
+        if (!this.data.purchaseOrders) {
+          this.data.purchaseOrders = [];
+        }
         if (!this.data.automationLogs) {
           this.data.automationLogs = [];
         }
@@ -33,6 +39,7 @@ class StoreDatabase {
         this.data = {
           products: [...initialProducts],
           orders: [...initialOrders],
+          purchaseOrders: [],
           automationLogs: [
             {
               id: 'log-1',
@@ -296,6 +303,13 @@ class StoreDatabase {
     this.data.orders.unshift(newOrder);
     this.save();
 
+    // Event-driven reactive pipeline: close the event loop on low stock
+    if (lowStockAlertsTriggered.length > 0) {
+      setTimeout(() => {
+        storeEvents.emit('stock:low', lowStockAlertsTriggered);
+      }, 50);
+    }
+
     return {
       order: newOrder,
       lowStockAlerts: lowStockAlertsTriggered
@@ -398,7 +412,63 @@ class StoreDatabase {
       salesTrend
     };
   }
+
+  // --- Autonomous Purchase Order (PO) Management ---
+  getPurchaseOrders() {
+    return this.data.purchaseOrders || [];
+  }
+
+  saveDraftPurchaseOrder(reportData) {
+    if (!this.data.purchaseOrders) this.data.purchaseOrders = [];
+    const poNumber = `PO-${new Date().getFullYear()}-${100 + this.data.purchaseOrders.length + 1}`;
+    const draftPO = {
+      id: poNumber,
+      createdAt: new Date().toISOString(),
+      status: 'PENDING_ADMIN_APPROVAL',
+      urgencyLevel: reportData.urgencyLevel || 'MODERATE',
+      executiveSummary: reportData.executiveSummary || 'Automated Stock Replenishment Plan',
+      totalAmount: reportData.estimatedTotalInvestment || 0,
+      items: reportData.restockItems || [],
+      approvedBy: null,
+      approvedAt: null
+    };
+    this.data.purchaseOrders.unshift(draftPO);
+    this.save();
+    return draftPO;
+  }
+
+  approvePurchaseOrder(poId, adminName = 'Krishna Patel') {
+    if (!this.data.purchaseOrders) return null;
+    const po = this.data.purchaseOrders.find(p => p.id === poId);
+    if (!po) return null;
+
+    po.status = 'APPROVED_AND_FULFILLED';
+    po.approvedBy = adminName;
+    po.approvedAt = new Date().toISOString();
+
+    const replenished = [];
+    for (const item of (po.items || [])) {
+      const prod = this.getProductById(item.productId);
+      if (prod) {
+        const qty = Number(item.recommendedReorderQty) || 20;
+        prod.stock += qty;
+        replenished.push({ id: prod.id, name: prod.name, newStock: prod.stock });
+      }
+    }
+
+    this.addLog(
+      'PO_APPROVED',
+      `PO FULFILLED: Admin ${adminName} approved Purchase Order ${po.id}. Replenished inventory for ${replenished.length} items. Total: ₹${po.totalAmount}`,
+      'success',
+      { poId: po.id, itemsReplenished: replenished }
+    );
+
+    this.save();
+    return po;
+  }
 }
 
 const db = new StoreDatabase();
 module.exports = db;
+module.exports.db = db;
+module.exports.storeEvents = storeEvents;
