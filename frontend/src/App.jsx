@@ -23,8 +23,20 @@ export default function App() {
   // User Authentication State (Customer vs Admin)
   const [currentUser, setCurrentUser] = useState(() => {
     try {
-      const saved = localStorage.getItem('smartbasket_user');
-      return saved ? JSON.parse(saved) : {
+      const savedStr = localStorage.getItem('smartbasket_user');
+      if (savedStr) {
+        const saved = JSON.parse(savedStr);
+        if (saved.name === 'Rahul Sharma' || saved.name?.includes('Rahul')) {
+          saved.name = 'Abhi Patel';
+          localStorage.setItem('smartbasket_user', JSON.stringify(saved));
+        }
+        if (saved.role === 'admin' && !saved.name?.includes('Krishna')) {
+          saved.name = 'Krishna Patel';
+          localStorage.setItem('smartbasket_user', JSON.stringify(saved));
+        }
+        return saved;
+      }
+      return {
         id: 'user-customer',
         name: 'Abhi Patel',
         email: 'user@smartbasket.com',
