@@ -1,7 +1,7 @@
 const { GoogleGenAI } = require('@google/genai');
 
 function getAiClient() {
-  const apiKey = process.env.GEMINI_API_KEY;
+  const apiKey = process.env.GEMINI_API_KEY || process.env['Grosary store API'] || process.env['GROCERY_STORE_API'];
   if (!apiKey || apiKey === 'YOUR_GEMINI_API_KEY_HERE' || apiKey.trim() === '') {
     return null;
   }

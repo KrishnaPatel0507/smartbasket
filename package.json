@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "SmartBasket – AI-Powered Smart Grocery Store & Automation System",
   "scripts": {
-    "build": "cd frontend && npm install && npm run build",
+    "build": "node build.js",
     "backend": "cd backend && npm run dev",
     "frontend": "cd frontend && npm run dev"
   },
